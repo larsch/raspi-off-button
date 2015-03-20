@@ -13,6 +13,7 @@ int main(int argc, char **argv)
     int wait_time = DEFAULT_TIME;
     int poll_freq = DEFAULT_FREQ;
     int pin = PIN;
+    int high = 0;
     const char* command = DEFAULT_COMMAND;
 
     while (1) {
@@ -23,10 +24,11 @@ int main(int argc, char **argv)
             { "freq", required_argument, 0, 'f' },
             { "command", required_argument, 0, 'c' },
             { "gpio", required_argument, 0, 'g' },
+            { "high", no_argument, 0, 'i' },
             { "help", no_argument, 0, 'h' },
             { 0, 0, 0, 0 }
         };
-        c = getopt_long(argc, argv, "t:f:c:g:h?", long_options, &option_index);
+        c = getopt_long(argc, argv, "t:f:c:g:ih?", long_options, &option_index);
         if (c == -1) break;
         switch (c) {
             case 't':
@@ -40,6 +42,9 @@ int main(int argc, char **argv)
                 break;
             case 'g':
                 pin = atoi(optarg);
+                break;
+            case 'i':
+                high = 1;
                 break;
             case '?':
             case 'h':
@@ -75,6 +80,7 @@ int main(int argc, char **argv)
     while (1)
     {
         uint8_t value = bcm2835_gpio_lev(pin);
+        value ^= high;
 	if (!value) count += poll_freq; else count = 0;
         if (count >= wait_time) {
 		system(command);
