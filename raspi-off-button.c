@@ -33,7 +33,7 @@ int main(int argc, char **argv)
             { "help", no_argument, 0, 'h' },
             { 0, 0, 0, 0 }
         };
-        c = getopt_long(argc, argv, "t:f:c:g:ivh?", long_options, &option_index);
+        c = getopt_long(argc, argv, "t:f:c:g:p:ivh?", long_options, &option_index);
         if (c == -1) break;
         switch (c) {
             case 't':
@@ -47,6 +47,18 @@ int main(int argc, char **argv)
                 break;
             case 'g':
                 pin = atoi(optarg);
+                break;
+            case 'p':
+                if (optarg[0] == 'u')
+                    pud_mode = BCM2835_GPIO_PUD_UP;
+                else if (optarg[0] == 'd')
+                    pud_mode = BCM2835_GPIO_PUD_DOWN;
+                else if (optarg[0] == 'o')
+                    pud_mode = BCM2835_GPIO_PUD_OFF;
+                else {
+                    fprintf(stderr, "Invalid pull mode '%s'. Can be one of 'up', 'down' or 'off'.\n", optarg);
+                    exit(1);
+                }
                 break;
             case 'i':
                 invert = 1;
